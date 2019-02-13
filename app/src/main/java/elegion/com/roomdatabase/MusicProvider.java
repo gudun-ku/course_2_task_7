@@ -9,6 +9,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import java.util.List;
+
 import elegion.com.roomdatabase.database.Album;
 import elegion.com.roomdatabase.database.MusicDao;
 import elegion.com.roomdatabase.database.MusicDatabase;
@@ -19,15 +21,50 @@ public class MusicProvider extends ContentProvider {
 
     private static final String AUTHORITY = "com.elegion.roomdatabase.musicprovider";
     private static final String TABLE_ALBUM = "album";
+    public static final String TABLE_SONG = "song";
+    public static final String TABLE_ALBUM_SONG = "albumsong";
 
     private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 
-    private static final int ALBUM_TABLE_CODE = 100;
-    private static final int ALBUM_ROW_CODE = 101;
+    private enum TableCode {
+
+        ALBUM_TABLE_CODE(100, TABLE_ALBUM),
+        ALBUM_ROW_CODE(101, TABLE_ALBUM),
+        SONG_TABLE_CODE(200, TABLE_SONG),
+        SONG_ROW_CODE (201, TABLE_SONG),
+        ALBUM_SONG_TABLE_CODE(300, TABLE_ALBUM_SONG),
+        ALBUM_SONG_ROW_CODE(301, TABLE_ALBUM_SONG),
+        ALBUM_SONG_ALBUM_CODE(400, TABLE_ALBUM_SONG),
+        ALBUM_SONG_ALBUM_SONG_CODE(500, TABLE_ALBUM_SONG);
+
+        private int VALUE;
+        private String TABLE;
+
+        private TableCode(int value, String table) {
+            this.VALUE = value;
+            this.TABLE = table;
+        }
+
+        public static boolean contains(int value) {
+            TableCode[] values = TableCode.values();
+            for (int i = 0; i < values.length; i++) {
+                if (values[i].VALUE == value)
+                    return true;
+            }
+            return false;
+        }
+
+    }
 
     static {
-        URI_MATCHER.addURI(AUTHORITY, TABLE_ALBUM, ALBUM_TABLE_CODE);
-        URI_MATCHER.addURI(AUTHORITY, TABLE_ALBUM + "/*", ALBUM_ROW_CODE);
+        URI_MATCHER.addURI(AUTHORITY, TABLE_ALBUM, TableCode.ALBUM_TABLE_CODE.VALUE);
+        URI_MATCHER.addURI(AUTHORITY, TABLE_ALBUM + "/*", TableCode.ALBUM_ROW_CODE.VALUE);
+        URI_MATCHER.addURI(AUTHORITY, TABLE_SONG, TableCode.SONG_TABLE_CODE.VALUE);
+        URI_MATCHER.addURI(AUTHORITY, TABLE_SONG + "/*", TableCode.SONG_ROW_CODE.VALUE);
+        URI_MATCHER.addURI(AUTHORITY, TABLE_ALBUM_SONG, TableCode.ALBUM_SONG_TABLE_CODE.VALUE);
+        URI_MATCHER.addURI(AUTHORITY, TABLE_ALBUM_SONG + "/" + TableCode.ALBUM_ROW_CODE.VALUE ,TableCode.ALBUM_SONG_ALBUM_CODE.VALUE);
+        URI_MATCHER.addURI(AUTHORITY, TABLE_ALBUM_SONG + "/" +  TableCode.ALBUM_ROW_CODE.VALUE + "/" + TableCode.SONG_ROW_CODE.VALUE, TableCode.ALBUM_SONG_ALBUM_SONG_CODE.VALUE);
+        URI_MATCHER.addURI(AUTHORITY, TABLE_ALBUM_SONG + "/*", TableCode.ALBUM_SONG_ROW_CODE.VALUE);
     }
 
     private MusicDao mMusicDao;
@@ -49,14 +86,10 @@ public class MusicProvider extends ContentProvider {
 
     @Override
     public String getType(Uri uri) {
-        switch (URI_MATCHER.match(uri)) {
-            case ALBUM_TABLE_CODE:
-                return "vnd.android.cursor.dir/" + AUTHORITY + "." + TABLE_ALBUM;
-            case ALBUM_ROW_CODE:
-                return "vnd.android.cursor.item/" + AUTHORITY + "." + TABLE_ALBUM;
-            default:
-                throw new UnsupportedOperationException("not yet implemented");
-        }
+        int value = URI_MATCHER.match(uri);
+
+        if (!TableCode.contains(value)) throw new UnsupportedOperationException("not yet implemented");
+        return TableCode.values()[value].TABLE;
     }
 
     @Override
@@ -65,11 +98,11 @@ public class MusicProvider extends ContentProvider {
 
         int code = URI_MATCHER.match(uri);
 
-        if (code != ALBUM_ROW_CODE && code != ALBUM_TABLE_CODE) return null;
+        if (!TableCode.contains(code)) return null;
 
         Cursor cursor;
-
-        if (code == ALBUM_TABLE_CODE) {
+        //switch here
+        if (code == TableCode.ALBUM_TABLE_CODE.VALUE) {
             cursor = mMusicDao.getAlbumsCursor();
         } else {
             cursor = mMusicDao.getAlbumWithIdCursor((int) ContentUris.parseId(uri));
@@ -79,7 +112,7 @@ public class MusicProvider extends ContentProvider {
 
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
-        if (URI_MATCHER.match(uri) == ALBUM_TABLE_CODE && isValuesValid(values)) {
+        if (URI_MATCHER.match(uri) == TableCode.ALBUM_TABLE_CODE.VALUE && isValuesValid(values)) {
             Album album = new Album();
             Integer id = values.getAsInteger("id");
             album.setId(id);
@@ -98,7 +131,7 @@ public class MusicProvider extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        if (URI_MATCHER.match(uri) == ALBUM_ROW_CODE && isValuesValid(values)) {
+        if (URI_MATCHER.match(uri) == TableCode.ALBUM_ROW_CODE.VALUE && isValuesValid(values)) {
             Album album = new Album();
             int id = (int) ContentUris.parseId(uri);
             album.setId(id);
@@ -114,7 +147,7 @@ public class MusicProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        if (URI_MATCHER.match(uri) == ALBUM_ROW_CODE) {
+        if (URI_MATCHER.match(uri) == TableCode.ALBUM_ROW_CODE.VALUE) {
             int id = (int) ContentUris.parseId(uri);
             return mMusicDao.deleteAlbumById(id);
         } else {

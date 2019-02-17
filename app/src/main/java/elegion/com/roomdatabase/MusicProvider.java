@@ -27,7 +27,6 @@ public class MusicProvider extends ContentProvider {
     private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 
     private enum TableCode {
-
         ALBUM_TABLE_CODE(100, TABLE_ALBUM),
         ALBUM_ROW_CODE(101, TABLE_ALBUM),
         SONG_TABLE_CODE(200, TABLE_SONG),
@@ -37,16 +36,21 @@ public class MusicProvider extends ContentProvider {
         ALBUM_SONG_ALBUM_CODE(400, TABLE_ALBUM_SONG),
         ALBUM_SONG_ALBUM_SONG_CODE(500, TABLE_ALBUM_SONG);
 
+        private  static TableCode[] values;
         private int VALUE;
         private String TABLE;
+
+        static {
+            values = TableCode.values();
+        }
 
         private TableCode(int value, String table) {
             this.VALUE = value;
             this.TABLE = table;
+
         }
 
         public static boolean contains(int value) {
-            TableCode[] values = TableCode.values();
             for (int i = 0; i < values.length; i++) {
                 if (values[i].VALUE == value)
                     return true;
@@ -104,8 +108,11 @@ public class MusicProvider extends ContentProvider {
         //switch here
         if (code == TableCode.ALBUM_TABLE_CODE.VALUE) {
             cursor = mMusicDao.getAlbumsCursor();
-        } else {
+        } else  if (code == TableCode.ALBUM_ROW_CODE.VALUE) {
             cursor = mMusicDao.getAlbumWithIdCursor((int) ContentUris.parseId(uri));
+        } else {
+            cursor = null;
+            throw new UnsupportedOperationException("not yet implemented");
         }
         return cursor;
     }

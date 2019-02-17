@@ -17,8 +17,15 @@ import java.util.List;
 @Dao
 public interface MusicDao {
 
-    // ALBUMS
-    // получить альбом
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAlbums(List<Album> albums);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAlbum(Album albums);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void setLinksAlbumSongs(List<AlbumSong> linksAlbumSongs);
+
     @Query("select * from album")
     List<Album> getAlbums();
 
@@ -28,12 +35,13 @@ public interface MusicDao {
     @Query("select * from album where id = :albumId")
     Cursor getAlbumWithIdCursor(int albumId);
 
-    //вставить альбом
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAlbums(List<Album> albums);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAlbum(Album albums);
+    @Delete
+    void deleteAlbum(Album album);
+
+    //получить список песен переданного id альбома
+    @Query("select * from song inner join albumsong on song.id = albumsong.song_id where album_id = :albumId")
+    List<Song> getSongsFromAlbum(int albumId);
 
     //обновить информацию об альбоме
     @Update
@@ -43,8 +51,6 @@ public interface MusicDao {
     @Query("DELETE FROM album where id = :albumId")
     int deleteAlbumById(int albumId);
 
-    @Delete
-    void deleteAlbum(Album album);
 
     // SONGS
 
@@ -60,6 +66,7 @@ public interface MusicDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertSongs(List<Song> songs);
 
+
     //вставить песню
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertSong(Song song);
@@ -67,15 +74,6 @@ public interface MusicDao {
     //обновить песню
     @Update
     int updateSongInfo(Song song);
-
-    //удалить песню по Id
-    @Delete
-    void deleteSongById(int songId);
-
-    @Delete
-    void deleteSong(Song song);
-
-    //связи альбом - песня
 
     // получить альбом
     @Query("select * from albumsong")
@@ -88,20 +86,25 @@ public interface MusicDao {
     @Query("select * from albumsong where id = :albumSongId")
     Cursor getAlbumSongWithIdCursor(int albumSongId);
 
-    //вставить связь песни и альбома
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void setLinksAlbumSongs(List<AlbumSong> linksAlbumSongs);
+    ////////////////////////////////////////////////////
 
-    //Удалить связь песни и альбом по Id
+    //удалить песню по Id
+    @Query("DELETE FROM song where id = :songId")
+    void deleteSongById(int songId);
+
     @Delete
+    void deleteSong(Song song);
+
+    //связи альбом - песня
+    //Удалить связь песни и альбом по Id
+    @Query("DELETE FROM albumsong where id = :songAlbumId")
     void deleteAlbumSongById(int songAlbumId);
 
     //Удалить связь песни и альбома
     @Delete
-    void deleteAlbumSongByAlbumAndSong(int songId, int albumId);
+    void deleteAlbumSong(AlbumSong albumSong);
 
-    //получить список песен переданного id альбома
-    @Query("select * from song inner join albumsong on song.id = albumsong.song_id where album_id = :albumId")
-    List<Song> getSongsFromAlbum(int albumId);
+
+
 
 }

@@ -23,9 +23,6 @@ public interface MusicDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAlbum(Album albums);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void setLinksAlbumSongs(List<AlbumSong> linksAlbumSongs);
-
     @Query("select * from album")
     List<Album> getAlbums();
 
@@ -66,25 +63,15 @@ public interface MusicDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertSongs(List<Song> songs);
 
-
     //вставить песню
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertSong(Song song);
+
 
     //обновить песню
     @Update
     int updateSongInfo(Song song);
 
-    // получить альбом
-    @Query("select * from albumsong")
-    List<AlbumSong> getAlbumSongs();
-
-    @Query("select * from albumsong")
-    Cursor getAlbumSongsCursor();
-
-    //получить песню из альбома по id связи?
-    @Query("select * from albumsong where id = :albumSongId")
-    Cursor getAlbumSongWithIdCursor(int albumSongId);
 
     ////////////////////////////////////////////////////
 
@@ -95,7 +82,22 @@ public interface MusicDao {
     @Delete
     void deleteSong(Song song);
 
+
     //связи альбом - песня
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void setLinksAlbumSongs(List<AlbumSong> linksAlbumSongs);
+
+    // получить связи альбом - песня
+    @Query("select * from albumsong")
+    List<AlbumSong> getAlbumSongs();
+
+    @Query("select * from albumsong")
+    Cursor getAlbumSongsCursor();
+
+    //получить песню из альбома по id связи?
+    @Query("select * from albumsong where id = :albumSongId")
+    Cursor getAlbumSongWithIdCursor(int albumSongId);
+
     //Удалить связь песни и альбом по Id
     @Query("DELETE FROM albumsong where id = :songAlbumId")
     void deleteAlbumSongById(int songAlbumId);
@@ -103,8 +105,5 @@ public interface MusicDao {
     //Удалить связь песни и альбома
     @Delete
     void deleteAlbumSong(AlbumSong albumSong);
-
-
-
 
 }

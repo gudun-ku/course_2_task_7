@@ -34,6 +34,11 @@ public class MainActivity extends AppCompatActivity {
         mAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // let's clean our tables first
+                musicDao.deleteAllAlbumSongs();
+                musicDao.deleteAllSongs();
+                musicDao.deleteAllAlbums();
+                // generate data
                 musicDao.insertAlbums(createAlbums());
                 musicDao.insertSongs(createSongs());
                 musicDao.setLinksAlbumSongs(createAlbumSongs());

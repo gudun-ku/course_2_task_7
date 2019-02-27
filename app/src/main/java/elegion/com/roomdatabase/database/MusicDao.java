@@ -32,10 +32,6 @@ public interface MusicDao {
     @Query("select * from album where id = :albumId")
     Cursor getAlbumWithIdCursor(int albumId);
 
-
-    @Delete
-    void deleteAlbum(Album album);
-
     //получить список песен переданного id альбома
     @Query("select * from song inner join albumsong on song.id = albumsong.song_id where album_id = :albumId")
     List<Song> getSongsFromAlbum(int albumId);
@@ -48,6 +44,11 @@ public interface MusicDao {
     @Query("DELETE FROM album where id = :albumId")
     int deleteAlbumById(int albumId);
 
+    @Delete
+    void deleteAlbum(Album album);
+
+    @Query("DELETE FROM album")
+    void deleteAllAlbums();
 
     // SONGS
 
@@ -82,6 +83,9 @@ public interface MusicDao {
     @Delete
     void deleteSong(Song song);
 
+    @Query("DELETE FROM song")
+    void deleteAllSongs();
+
 
     //связи альбом - песня
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -105,5 +109,8 @@ public interface MusicDao {
     //Удалить связь песни и альбома
     @Delete
     void deleteAlbumSong(AlbumSong albumSong);
+
+    @Query("DELETE FROM albumsong")
+    void deleteAllAlbumSongs();
 
 }

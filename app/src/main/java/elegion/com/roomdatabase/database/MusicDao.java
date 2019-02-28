@@ -98,9 +98,17 @@ public interface MusicDao {
     @Query("select * from albumsong")
     Cursor getAlbumSongsCursor();
 
-    //получить песню из альбома по id связи?
+    //получить связь из альбома по id связи
     @Query("select * from albumsong where id = :albumSongId")
     Cursor getAlbumSongWithIdCursor(int albumSongId);
+
+    //получить связи из альбома по id песни
+    @Query("select * from albumsong where song_id = :albumSongSongId")
+    Cursor getAlbumSongWithSongIdCursor(int albumSongSongId);
+
+    //получить связи из альбома по id альбома
+    @Query("select * from albumsong where album_id = :albumSongAlbumId")
+    Cursor getAlbumSongWithAlbumIdCursor(int albumSongAlbumId);
 
     //Удалить связь песни и альбом по Id
     @Query("DELETE FROM albumsong where id = :songAlbumId")

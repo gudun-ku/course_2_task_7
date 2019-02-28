@@ -33,8 +33,8 @@ public class MusicProvider extends ContentProvider {
         SONG_ROW_CODE (201, TABLE_SONG),
         ALBUM_SONG_TABLE_CODE(300, TABLE_ALBUM_SONG),
         ALBUM_SONG_ROW_CODE(301, TABLE_ALBUM_SONG),
-        ALBUM_SONG_ALBUM_CODE(400, TABLE_ALBUM_SONG),
-        ALBUM_SONG_ALBUM_SONG_CODE(500, TABLE_ALBUM_SONG);
+        ALBUM_SONG_ALBUM_CODE(302, TABLE_ALBUM_SONG),
+        ALBUM_SONG_SONG_CODE(303, TABLE_ALBUM_SONG);
 
         private  static TableCode[] values;
         private int VALUE;
@@ -67,7 +67,7 @@ public class MusicProvider extends ContentProvider {
         URI_MATCHER.addURI(AUTHORITY, TABLE_SONG + "/*", TableCode.SONG_ROW_CODE.VALUE);
         URI_MATCHER.addURI(AUTHORITY, TABLE_ALBUM_SONG, TableCode.ALBUM_SONG_TABLE_CODE.VALUE);
         URI_MATCHER.addURI(AUTHORITY, TABLE_ALBUM_SONG + "/" + TableCode.ALBUM_ROW_CODE.VALUE ,TableCode.ALBUM_SONG_ALBUM_CODE.VALUE);
-        URI_MATCHER.addURI(AUTHORITY, TABLE_ALBUM_SONG + "/" +  TableCode.ALBUM_ROW_CODE.VALUE + "/" + TableCode.SONG_ROW_CODE.VALUE, TableCode.ALBUM_SONG_ALBUM_SONG_CODE.VALUE);
+        URI_MATCHER.addURI(AUTHORITY, TABLE_ALBUM_SONG + "/" + TableCode.SONG_ROW_CODE.VALUE, TableCode.ALBUM_SONG_SONG_CODE.VALUE);
         URI_MATCHER.addURI(AUTHORITY, TABLE_ALBUM_SONG + "/*", TableCode.ALBUM_SONG_ROW_CODE.VALUE);
     }
 
@@ -110,6 +110,18 @@ public class MusicProvider extends ContentProvider {
             cursor = mMusicDao.getAlbumsCursor();
         } else  if (code == TableCode.ALBUM_ROW_CODE.VALUE) {
             cursor = mMusicDao.getAlbumWithIdCursor((int) ContentUris.parseId(uri));
+        } else  if (code == TableCode.SONG_TABLE_CODE.VALUE) {
+            cursor = mMusicDao.getSongsCursor();
+        } else  if (code == TableCode.SONG_ROW_CODE.VALUE) {
+            cursor = mMusicDao.getSongWithIdCursor((int) ContentUris.parseId(uri));
+        } else  if (code == TableCode.ALBUM_SONG_TABLE_CODE.VALUE) {
+            cursor = mMusicDao.getAlbumSongsCursor();
+        } else  if (code == TableCode.ALBUM_SONG_ROW_CODE.VALUE) {
+            cursor = mMusicDao.getAlbumSongWithIdCursor((int) ContentUris.parseId(uri));
+        } else  if (code == TableCode.ALBUM_SONG_ALBUM_CODE.VALUE) {
+            cursor = mMusicDao.getAlbumSongWithSongIdCursor((int) ContentUris.parseId(uri));
+        } else  if (code == TableCode.ALBUM_SONG_SONG_CODE.VALUE) {
+            cursor = mMusicDao.getAlbumSongWithAlbumIdCursor((int) ContentUris.parseId(uri));
         } else {
             cursor = null;
             throw new UnsupportedOperationException("not yet implemented");

@@ -33,7 +33,7 @@ public interface MusicDao {
     Cursor getAlbumWithIdCursor(int albumId);
 
     //получить список песен переданного id альбома
-    @Query("select * from song inner join albumsong on song.id = albumsong.song_id where album_id = :albumId")
+    @Query("select song.* from song inner join albumsong on song.id = albumsong.song_id where album_id = :albumId")
     List<Song> getSongsFromAlbum(int albumId);
 
     //обновить информацию об альбоме
@@ -78,7 +78,7 @@ public interface MusicDao {
 
     //удалить песню по Id
     @Query("DELETE FROM song where id = :songId")
-    void deleteSongById(int songId);
+    int deleteSongById(int songId);
 
     @Delete
     void deleteSong(Song song);
@@ -88,6 +88,9 @@ public interface MusicDao {
 
 
     //связи альбом - песня
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    long setLinkAlbumSong(AlbumSong albumSong);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void setLinksAlbumSongs(List<AlbumSong> linksAlbumSongs);
 
@@ -102,21 +105,21 @@ public interface MusicDao {
     @Query("select * from albumsong where id = :albumSongId")
     Cursor getAlbumSongWithIdCursor(int albumSongId);
 
-    //получить связи из альбома по id песни
-    @Query("select * from albumsong where song_id = :albumSongSongId")
-    Cursor getAlbumSongWithSongIdCursor(int albumSongSongId);
-
-    //получить связи из альбома по id альбома
-    @Query("select * from albumsong where album_id = :albumSongAlbumId")
-    Cursor getAlbumSongWithAlbumIdCursor(int albumSongAlbumId);
+    //получить связи из альбома по id альбома и id песни
+    @Query("select * from albumsong where album_id = :albumSongAlbumId and song_id = :albumSongSongId")
+    Cursor getAlbumSongWithAlbumIdSongIdCursor(int albumSongAlbumId, int albumSongSongId);
 
     //Удалить связь песни и альбом по Id
     @Query("DELETE FROM albumsong where id = :songAlbumId")
-    void deleteAlbumSongById(int songAlbumId);
+    int deleteAlbumSongById(int songAlbumId);
 
     //Удалить связь песни и альбома
     @Delete
     void deleteAlbumSong(AlbumSong albumSong);
+
+    //Удалить связь по Id песни и Id альбома
+    @Query("DELETE FROM albumsong  where album_id = :albumSongAlbumId and song_id = :albumSongSongId")
+    int deleteAlbumSongById(int albumSongAlbumId, int albumSongSongId);
 
     @Query("DELETE FROM albumsong")
     void deleteAllAlbumSongs();

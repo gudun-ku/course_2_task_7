@@ -49,16 +49,13 @@ public class MusicProvider extends ContentProvider {
             SONG_TABLE_CODE,
             SONG_ROW_CODE,
             ALBUM_SONG_TABLE_CODE,
-            ALBUM_SONG_ROW_CODE,
-            ALBUM_SONG_ALBUM_CODE_SONG_CODE};
+            ALBUM_SONG_ROW_CODE};
 
     public static String[] tableNames =
             {TABLE_ALBUM,
             TABLE_ALBUM,
             TABLE_SONG,
             TABLE_SONG,
-            TABLE_ALBUM_SONG,
-            TABLE_ALBUM_SONG,
             TABLE_ALBUM_SONG,
             TABLE_ALBUM_SONG};
 
@@ -71,8 +68,7 @@ public class MusicProvider extends ContentProvider {
         URI_MATCHER.addURI(AUTHORITY, TABLE_SONG, SONG_TABLE_CODE);
         URI_MATCHER.addURI(AUTHORITY, TABLE_SONG + "/*", SONG_ROW_CODE);
         URI_MATCHER.addURI(AUTHORITY, TABLE_ALBUM_SONG, ALBUM_SONG_TABLE_CODE);
-        URI_MATCHER.addURI(AUTHORITY, TABLE_ALBUM_SONG + "/" + ALBUM_ROW_CODE  + "/" + SONG_ROW_CODE, ALBUM_SONG_ALBUM_CODE_SONG_CODE);
-        URI_MATCHER.addURI(AUTHORITY, TABLE_ALBUM_SONG + "/" + ALBUM_SONG_ROW_CODE, ALBUM_SONG_ROW_CODE);
+        URI_MATCHER.addURI(AUTHORITY, TABLE_ALBUM_SONG + "/*", ALBUM_SONG_ROW_CODE);
     }
 
     private MusicDao mMusicDao;
@@ -126,9 +122,6 @@ public class MusicProvider extends ContentProvider {
                 break;
             case ALBUM_SONG_ROW_CODE:
                 cursor = mMusicDao.getAlbumSongWithIdCursor((int) ContentUris.parseId(uri));
-                break;
-            case ALBUM_SONG_ALBUM_CODE_SONG_CODE:
-                cursor = mMusicDao.getAlbumSongWithAlbumIdSongIdCursor((int) ContentUris.parseId(uri),(int) ContentUris.parseId(uri));
                 break;
                 default:
                     cursor = null;

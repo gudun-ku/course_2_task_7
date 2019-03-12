@@ -6,7 +6,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -56,9 +58,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private List<Album> createAlbums() {
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd ,yyyy");
+
         List<Album> albums = new ArrayList<>(10);
         for (int i = 0; i < 3; i++) {
-            albums.add(new Album(i, "album " + i, "release" + System.currentTimeMillis()));
+            albums.add(new Album(i, "album " + i, "release " + sdf.format(new Date(System.currentTimeMillis()))));
         }
         return albums;
     }

@@ -68,11 +68,9 @@ public interface MusicDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertSong(Song song);
 
-
     //обновить песню
     @Update
     int updateSongInfo(Song song);
-
 
     ////////////////////////////////////////////////////
 
@@ -86,9 +84,8 @@ public interface MusicDao {
     @Query("DELETE FROM song")
     void deleteAllSongs();
 
-
     //связи альбом - песня
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     long setLinkAlbumSong(AlbumSong albumSong);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -108,6 +105,11 @@ public interface MusicDao {
     //получить связи из альбома по id альбома и id песни
     @Query("select * from albumsong where album_id = :albumSongAlbumId and song_id = :albumSongSongId")
     Cursor getAlbumSongWithAlbumIdSongIdCursor(int albumSongAlbumId, int albumSongSongId);
+
+
+    //обновить связь альбом - песня
+    @Update
+    int updateLinkAlbumSong(AlbumSong albumSong);
 
     //Удалить связь песни и альбом по Id
     @Query("DELETE FROM albumsong where id = :songAlbumId")

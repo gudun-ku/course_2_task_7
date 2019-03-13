@@ -153,7 +153,7 @@ public class MusicProvider extends ContentProvider {
             album.setReleaseDate(values.getAsString("release"));
             mMusicDao.insertAlbum(album);
             return ContentUris.withAppendedId(uri, id);
-        } else if (URI_MATCHER.match(uri) == SONG_ROW_CODE && isValuesForSongValid(values)) {
+        } else if (URI_MATCHER.match(uri) == SONG_TABLE_CODE && isValuesForSongValid(values)) {
             Song song = new Song();
             Integer id = values.getAsInteger("id");
             song.setId(id);
@@ -161,7 +161,7 @@ public class MusicProvider extends ContentProvider {
             song.setDuration(values.getAsString("duration"));
             mMusicDao.insertSong(song);
             return ContentUris.withAppendedId(uri, id);
-        } else if (URI_MATCHER.match(uri) == ALBUM_SONG_ROW_CODE && isValuesForAlbumSongValid(values)) {
+        } else if (URI_MATCHER.match(uri) == ALBUM_SONG_TABLE_CODE && isValuesForAlbumSongValid(values)) {
             AlbumSong albumSong = new AlbumSong();
             albumSong.setAlbumId(values.getAsInteger("album_id"));
             albumSong.setSongId(values.getAsInteger("song_id"));
@@ -186,20 +186,20 @@ public class MusicProvider extends ContentProvider {
             updatedRows = mMusicDao.updateAlbumInfo(album);
 
         } else if (URI_MATCHER.match(uri) == SONG_ROW_CODE && isValuesForSongValid(values)) {
-            Album album = new Album();
+            Song song = new Song();
             int id = (int) ContentUris.parseId(uri);
-            album.setId(id);
-            album.setName(values.getAsString("name"));
-            album.setReleaseDate(values.getAsString("release"));
-            updatedRows = mMusicDao.updateAlbumInfo(album);
+            song.setId(id);
+            song.setName(values.getAsString("name"));
+            song.setDuration(values.getAsString("duration"));
+            updatedRows = mMusicDao.updateSongInfo(song);
 
         } else if (URI_MATCHER.match(uri) == ALBUM_SONG_ROW_CODE && isValuesForAlbumSongValid(values)) {
-            Album album = new Album();
+            AlbumSong link = new AlbumSong();
             int id = (int) ContentUris.parseId(uri);
-            album.setId(id);
-            album.setName(values.getAsString("name"));
-            album.setReleaseDate(values.getAsString("release"));
-            updatedRows = mMusicDao.updateAlbumInfo(album);
+            link.setId(id);
+            link.setSongId(values.getAsInteger("song_id"));
+            link.setAlbumId(values.getAsInteger("album_id"));
+            updatedRows = mMusicDao.updateLinkAlbumSong(link);
 
         } else {
             throw new IllegalArgumentException("cant update multiple items");

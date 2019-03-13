@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">RoomDatabase</string>
+    <string name="str_clear_data">clear</string>
+    <string name="str_generate_data">generate</string>
 </resources>

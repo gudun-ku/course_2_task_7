@@ -5,13 +5,15 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.PrimaryKey;
 
+import static android.arch.persistence.room.ForeignKey.CASCADE;
+
 /**
  * @author Azret Magometov
  */
 
 @Entity(foreignKeys = {
-        @ForeignKey(entity = Album.class, parentColumns = "id", childColumns = "album_id"),
-        @ForeignKey(entity = Song.class, parentColumns = "id", childColumns = "song_id")})
+        @ForeignKey(entity = Album.class, parentColumns = "id", childColumns = "album_id",  onDelete = CASCADE),
+        @ForeignKey(entity = Song.class, parentColumns = "id", childColumns = "song_id", onDelete = CASCADE)})
 public class AlbumSong {
 
     @PrimaryKey(autoGenerate = true)
